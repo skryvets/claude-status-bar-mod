@@ -115,6 +115,36 @@ test('context, model, folder and limit pace are drawn above the prompt', async (
   }
 })
 
+test('every band line keeps a monospaced face so the bars line up on desktop', async ($, on) => {
+  session(
+    on,
+    [
+      { kind: 'five_hour', percentUsed: 20, resetsAt: '2026-10-10T11:22:00Z' },
+      { kind: 'seven_day', percentUsed: 3, resetsAt: '2026-10-14T10:00:00Z' },
+    ],
+    () => 46100,
+    [
+      { name: 'Messages', tokens: 30000, kind: 'used', color: 'inactive', isDeferred: false },
+      { name: 'System tools', tokens: 16100, kind: 'used', color: 'inactive', isDeferred: false },
+      { name: 'Free space', tokens: 120000, kind: 'free', color: 'inactive', isDeferred: false },
+      { name: 'Autocompact buffer', tokens: 33000, kind: 'buffer', color: 'inactive', isDeferred: false },
+    ],
+  )
+  await $.session.measure({ context: { window: 200000 }, rateLimits: [], changed: ['context'] })
+
+  const ui = await $.ui.mount({ plugin: 'session', surface: 'desktop', ...BAND })
+  const lines = (await ui.findAll({ type: 'Text' })).filter(found => found.props.wrap === 'truncate-end')
+
+  expect(lines.map(found => found.text.split(':')[0])).toEqual([
+    'Opus 5.5 · ~/Code/app (main)',
+    'Context',
+    'Session',
+    'Weekly',
+  ])
+  expect(lines.every(found => found.props.mono === true)).toBe(true)
+  await ui.unmount()
+})
+
 test('pace is held back until 3% of the window has passed', async ($, on) => {
   session(on, [{ kind: 'seven_day', percentUsed: 4, resetsAt: '2026-10-17T09:00:00Z' }])
   await $.session.measure({ context: { window: 200000 }, rateLimits: [], changed: ['context'] })

@@ -322,7 +322,7 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column" gap={gap} paddingTop={paddingTop} paddingLeft={2}>
-        <Text wrap="truncate-end">
+        <Text mono wrap="truncate-end">
           <Text>{now.model}</Text>
           {now.effort !== '' && dot}
           {now.effort !== '' && <Text color="claude">{now.effort}</Text>}
@@ -341,7 +341,7 @@ export const register: Register = on => {
             </Text>
           )}
         </Text>
-        <Text wrap="truncate-end">
+        <Text mono wrap="truncate-end">
           {parts.length === 0
             ? row('Context', now.percent, heat(now.percent))
             : [
@@ -373,7 +373,7 @@ export const register: Register = on => {
           const mark = Math.min(BAR - 1, Math.max(0, Math.round((limit.percentUsed / 100) * BAR)))
 
           return [
-            <Text wrap="truncate-end">
+            <Text mono wrap="truncate-end">
               <Text bold>{`${name}:`.padEnd(9)}</Text>
               {Array.from({ length: BAR }, (_, i) =>
                 i === mark ? (
